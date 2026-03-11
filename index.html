@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>X Follower Analyzer — @MexiSonora</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060608;--bg2:#0e0e12;--bg3:#16161c;--bg4:#1e1e26;
+  --line:#252530;--line2:#303040;
+  --t1:#f0f0f8;--t2:#7878a0;--t3:#404055;
+  --x:#1d9bf0;--g:#00c47a;--r:#f02050;--o:#f5c000;--p:#9060f0;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'Manrope',sans-serif;
+  --disp:'Bebas Neue',sans-serif;
+}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--line);background:rgba(6,6,8,.97);position:sticky;top:0;z-index:50}
+.hlogo{display:flex;align-items:center;gap:10px}
+.hico{width:32px;height:32px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hico svg{width:17px;height:17px}
+.htitle{font-family:var(--disp);font-size:19px;letter-spacing:1px}
+.hsub{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1.5px;margin-top:1px}
+.hbadge{font-family:var(--mono);font-size:11px;color:var(--t2);text-decoration:none;border:1px solid var(--line2);padding:5px 11px;border-radius:20px;background:var(--bg3);transition:.15s}
+.hbadge:hover{color:var(--x);border-color:var(--x)}
+.hbadge b{color:var(--x)}
+
+main{max-width:900px;margin:0 auto;padding:22px 18px 60px}
+
+/* PANEL */
+.panel{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+.ptitle{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+
+/* ACCOUNT */
+.awrap{position:relative;margin-bottom:10px}
+.aat{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:14px;color:var(--t3);pointer-events:none}
+.ainp{width:100%;background:var(--bg3);border:1px solid var(--line2);color:var(--t1);font-family:var(--mono);font-size:13px;padding:10px 12px 10px 26px;border-radius:8px;outline:none;transition:.15s}
+.ainp:focus{border-color:var(--x);box-shadow:0 0 0 3px rgba(29,155,240,.1)}
+.ainp::placeholder{color:var(--t3)}
+.alinks{display:flex;gap:8px;flex-wrap:wrap}
+.alink{font-family:var(--mono);font-size:10px;color:var(--x);text-decoration:none;border:1px solid rgba(29,155,240,.3);padding:6px 12px;border-radius:6px;background:rgba(29,155,240,.06);transition:.15s;display:flex;align-items:center;gap:5px}
+.alink:hover{background:rgba(29,155,240,.14)}
+
+/* TWO COLS */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:580px){.two{grid-template-columns:1fr}}
+.colbox{display:flex;flex-direction:column;gap:6px}
+.coltag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;padding:7px 12px;border-radius:7px;display:flex;align-items:center;gap:6px}
+.tfw{background:rgba(29,155,240,.08);border:1px solid rgba(29,155,240,.25);color:var(--x)}
+.tfr{background:rgba(0,196,122,.08);border:1px solid rgba(0,196,122,.25);color:var(--g)}
+.dot{width:7px;height:7px;border-radius:50%}
+textarea{width:100%;background:var(--bg3);border:1px solid var(--line2);color:var(--t1);font-family:var(--mono);font-size:11px;line-height:1.8;padding:10px 12px;border-radius:8px;resize:vertical;min-height:140px;outline:none;transition:.15s}
+textarea::placeholder{color:var(--t3);font-size:10px}
+#tfw:focus{border-color:var(--x)}
+#tfr:focus{border-color:var(--g)}
+.colct{font-family:var(--mono);font-size:10px;min-height:16px}
+.ctok{color:var(--g)}.cterr{color:var(--r)}
+
+/* WARN BOX */
+.warnbox{background:rgba(245,192,0,.06);border:1px solid rgba(245,192,0,.2);border-radius:8px;padding:11px 14px;font-size:11px;color:#ffe066;line-height:1.7;margin-bottom:12px}
+.warnbox strong{color:var(--o)}
+.warnbox code{background:rgba(245,192,0,.12);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:10px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-weight:700;font-size:12px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;transition:.15s;white-space:nowrap;text-decoration:none;background:none}
+.bx{background:var(--x);color:#fff}.bx:hover{background:#0f6cbd}
+.bgh{background:var(--bg4);color:var(--t2);border:1px solid var(--line2)}.bgh:hover{color:var(--t1)}
+.bgo{background:rgba(245,192,0,.08);color:var(--o);border:1px solid rgba(245,192,0,.2)}.bgo:hover{background:rgba(245,192,0,.15)}
+.brow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* SCRIPT BOX */
+#sbox{display:none;background:var(--bg2);border:1px solid rgba(245,192,0,.25);border-radius:12px;padding:18px;margin-bottom:16px}
+#sbox pre{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:10px;color:#7dffd0;overflow-x:auto;line-height:1.8;white-space:pre-wrap}
+
+/* PREVIEW */
+#pvbox{display:none;background:var(--bg3);border:1px solid var(--line2);border-radius:8px;padding:14px;margin-top:10px;font-family:var(--mono);font-size:11px;line-height:1.9}
+
+/* LOADER */
+#loader{display:none;text-align:center;padding:44px}
+.spin{width:36px;height:36px;margin:0 auto 12px;border:3px solid var(--line);border-top-color:var(--x);border-radius:50%;animation:spin .7s linear infinite}
+.ltxt{font-family:var(--mono);font-size:11px;color:var(--t2)}
+
+/* RESULTS */
+#results{display:none}
+
+/* LEGEND */
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;background:var(--bg3);border-radius:8px;border:1px solid var(--line);margin-bottom:14px}
+.leg{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;letter-spacing:.4px}
+.ldot{width:7px;height:7px;border-radius:50%}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kx::before{background:var(--x)}.kg::before{background:var(--g)}.kr::before{background:var(--r)}.ko::before{background:var(--o)}
+.kl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
+.kv{font-family:var(--disp);font-size:34px;line-height:1}
+.kx .kv{color:var(--x)}.kg .kv{color:var(--g)}.kr .kv{color:var(--r)}.ko .kv{color:var(--o)}
+.ks{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* FILTERS */
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.fb{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid var(--line2);background:var(--bg3);color:var(--t2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:4px}
+.fb:hover{color:var(--t1)}
+.fb.on{border-color:var(--x);background:rgba(29,155,240,.1);color:var(--x)}
+.fb.gon{border-color:var(--g);background:rgba(0,196,122,.1);color:var(--g)}
+.fb.ron{border-color:var(--r);background:rgba(240,32,80,.1);color:var(--r)}
+.fb.oon{border-color:var(--o);background:rgba(245,192,0,.08);color:var(--o)}
+.fct{font-size:9px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:10px}
+.fsearch{margin-left:auto;background:var(--bg3);border:1px solid var(--line2);color:var(--t1);font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:20px;outline:none;width:160px;transition:.15s}
+.fsearch:focus{border-color:var(--x);width:200px}
+.fsearch::placeholder{color:var(--t3)}
+
+/* EXPORT BAR */
+.ebar{display:flex;gap:7px;align-items:center;padding:11px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;margin-bottom:12px;flex-wrap:wrap}
+.elbl{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+.ebtn{font-family:var(--mono);font-size:10px;font-weight:700;padding:6px 13px;border-radius:6px;border:none;cursor:pointer;transition:.15s}
+.e1{background:rgba(0,196,122,.12);color:var(--g);border:1px solid rgba(0,196,122,.25)}
+.e2{background:rgba(29,155,240,.12);color:var(--x);border:1px solid rgba(29,155,240,.25)}
+.e3{background:rgba(245,192,0,.08);color:var(--o);border:1px solid rgba(245,192,0,.2)}
+.ebtn:hover{filter:brightness(1.25)}
+.emem{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--t3);display:flex;align-items:center;gap:8px}
+.emem b{color:var(--g)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.ucard{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.ucard:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.ucard:hover .xgo{opacity:1}
+.ucard.cm{border-color:rgba(29,155,240,.28)}
+.ucard.cf{border-color:rgba(0,196,122,.22)}
+.ucard.cn{border-color:rgba(240,32,80,.18)}
+.ucard.cu{border-color:rgba(245,192,0,.18)}
+.av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;border:2px solid}
+.un{flex:1;min-width:0}
+.uh{font-family:var(--mono);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.um{font-size:10px;color:var(--t2);margin-top:2px}
+.ubadge{font-family:var(--mono);font-size:8px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
+.bm{background:rgba(29,155,240,.1);color:var(--x);border:1px solid rgba(29,155,240,.2)}
+.bf{background:rgba(0,196,122,.1);color:var(--g);border:1px solid rgba(0,196,122,.2)}
+.bn{background:rgba(240,32,80,.08);color:var(--r);border:1px solid rgba(240,32,80,.18)}
+.bu{background:rgba(245,192,0,.07);color:var(--o);border:1px solid rgba(245,192,0,.18)}
+.xgo{position:absolute;top:8px;right:8px;opacity:0;transition:.15s;background:rgba(29,155,240,.1);border:1px solid rgba(29,155,240,.2);border-radius:5px;padding:2px 7px;font-family:var(--mono);font-size:9px;color:var(--x);text-decoration:none}
+
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px}
+.ei{font-size:42px;opacity:.3;margin-bottom:12px}
+.empty h2{font-family:var(--disp);font-size:22px;letter-spacing:1px;margin-bottom:6px;color:var(--t2)}
+.empty p{font-size:12px;color:var(--t3);line-height:1.7;max-width:340px;margin:0 auto}
+.membadge{display:inline-flex;align-items:center;gap:5px;background:rgba(144,96,240,.1);border:1px solid rgba(144,96,240,.2);border-radius:20px;padding:4px 11px;font-family:var(--mono);font-size:10px;color:var(--p);margin-top:14px}
+
+#pag{display:flex;justify-content:center;gap:5px;margin-top:14px;flex-wrap:wrap}
+
+/* TOAST */
+#ts{position:fixed;bottom:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:6px}
+.toast{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:300px;animation:fadeUp .2s ease}
+.tok{border-left:3px solid var(--g);color:var(--g)}
+.terr{border-left:3px solid var(--r);color:var(--r)}
+.tinfo{border-left:3px solid var(--x);color:var(--x)}
+.twarn{border-left:3px solid var(--o);color:var(--o)}
+
+footer{border-top:1px solid var(--line);padding:16px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--t3)}
+footer a{color:var(--x);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hlogo">
+    <div class="hico">
+      <svg viewBox="0 0 24 24" fill="black"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </div>
+    <div>
+      <div class="htitle">FOLLOWER ANALYZER</div>
+      <div class="hsub">X · TWITTER · by @MexiSonora</div>
+    </div>
+  </div>
+  <a class="hbadge" href="https://x.com/MexiSonora" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    <b>@MexiSonora</b>
+  </a>
+</header>
+
+<main>
+
+<div class="panel">
+  <div class="ptitle">// paso 1 — tu cuenta</div>
+  <div class="awrap">
+    <span class="aat">@</span>
+    <input class="ainp" id="acc" type="text" placeholder="tuusuario" maxlength="50"/>
+  </div>
+  <div class="alinks">
+    <a id="lfw" href="https://x.com" target="_blank" rel="noopener" class="alink">📋 Abrir Following →</a>
+    <a id="lfr" href="https://x.com" target="_blank" rel="noopener" class="alink">👥 Abrir Followers →</a>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="ptitle">// paso 2 — pega las listas con @usuario</div>
+
+  <div class="warnbox">
+    <strong>⚠ Formato:</strong> cada usuario debe ir con <code>@</code> — ejemplo: <code>@juanperez</code>.
+    Acepta uno por línea, o varios separados por espacios/comas. El <code>@</code> es obligatorio para evitar confundir handles con texto normal de X.
+  </div>
+
+  <div class="two">
+    <div class="colbox">
+      <div class="coltag tfw"><div class="dot" style="background:var(--x)"></div>📋 FOLLOWING — yo sigo a estos</div>
+      <textarea id="tfw" placeholder="@usuario1&#10;@usuario2&#10;@usuario3&#10;&#10;— usuarios que TÚ SIGUES"></textarea>
+      <div class="colct" id="ctfw"></div>
+    </div>
+    <div class="colbox">
+      <div class="coltag tfr"><div class="dot" style="background:var(--g)"></div>👥 FOLLOWERS — estos me siguen</div>
+      <textarea id="tfr" placeholder="@usuario1&#10;@usuario2&#10;@usuario3&#10;&#10;— usuarios que TE SIGUEN A TI"></textarea>
+      <div class="colct" id="ctfr"></div>
+    </div>
+  </div>
+
+  <div class="brow">
+    <button class="btn bx" id="btngo">✓ Analizar</button>
+    <button class="btn bgh" id="btnprev" style="font-size:11px">🔍 Verificar detección</button>
+    <button class="btn bgo" id="btnscript" style="font-size:11px">⚡ Script DevTools</button>
+    <button class="btn bgh" id="btnclr" style="font-size:11px">✕ Limpiar</button>
+  </div>
+  <div id="pvbox"></div>
+</div>
+
+<div id="sbox">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-family:var(--mono);font-size:10px;color:var(--o);letter-spacing:1px">// SCRIPT — F12 → Console → pegar → Enter</span>
+    <button id="btnxscript" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px">✕</button>
+  </div>
+  <div style="font-size:11px;color:var(--t2);line-height:1.65;margin-bottom:10px">
+    Abre <strong style="color:var(--t1)">x.com/TuCuenta/following</strong>, presiona <strong style="color:var(--t1)">F12</strong>, ve a Console, pega y Enter. Repite en <strong style="color:var(--t1)">/followers</strong>.
+  </div>
+  <pre id="devscript">// Pega en DevTools Console (F12) — x.com/TuCuenta/following o /followers
+(function() {
+  const found = new Set();
+  const skip = new Set(['home','explore','notifications','messages','settings','i','search','compose','intent','login','signup']);
+  document.querySelectorAll('[data-testid="UserCell"]').forEach(cell => {
+    cell.querySelectorAll('a[href]').forEach(a => {
+      const m = (a.getAttribute('href')||'').match(/^\/([a-zA-Z0-9_]{1,50})(\?.*)?$/);
+      if (m && m[1] && !skip.has(m[1].toLowerCase())) found.add('@' + m[1].toLowerCase());
+    });
+  });
+  const out = [...found].join('\n');
+  console.log('%c=== X Follower Analyzer by @MexiSonora ===','color:#1d9bf0;font-weight:bold;font-size:13px');
+  console.log('%c' + found.size + ' handles encontrados','color:#00c47a;font-weight:bold');
+  console.log(out);
+  try { copy(out); console.log('%c✓ Copiado al portapapeles','color:#f5c000'); } catch(e){}
+})()</pre>
+  <button class="btn bgo" id="btncpscript" style="margin-top:10px;font-size:11px">📋 Copiar script</button>
+</div>
+
+<div id="loader">
+  <div class="spin"></div>
+  <div class="ltxt">Analizando...</div>
+</div>
+
+<div id="results">
+  <div class="legend">
+    <div class="leg"><div class="ldot" style="background:var(--x)"></div><span style="color:var(--x)">MUTUO</span> — ambos se siguen</div>
+    <div class="leg"><div class="ldot" style="background:var(--g)"></div><span style="color:var(--g)">TE SIGUE</span> — te sigue, tú no</div>
+    <div class="leg"><div class="ldot" style="background:var(--r)"></div><span style="color:var(--r)">NO TE SIGUE</span> — tú sigues, él no</div>
+    <div class="leg"><div class="ldot" style="background:var(--o)"></div><span style="color:var(--o)">SIN RELACIÓN</span> — ninguno sigue</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="ebar">
+    <span class="elbl">Exportar:</span>
+    <button class="ebtn e1" id="expcsv">↓ CSV</button>
+    <button class="ebtn e2" id="exptxt">↓ TXT</button>
+    <button class="ebtn e3" id="expjson">↓ JSON</button>
+    <div class="emem">
+      💾 <b id="memct">0</b> en memoria
+      <button class="btn bgh" style="font-size:10px;padding:4px 10px" id="btnclrmem">🗑 Borrar</button>
+    </div>
+  </div>
+
+  <div class="fbar">
+    <button class="fb on" data-f="all">Todos <span class="fct" id="nall">0</span></button>
+    <button class="fb" data-f="mutual">↔ Mutuos <span class="fct" id="nmutual">0</span></button>
+    <button class="fb" data-f="follows">✓ Me siguen <span class="fct" id="nfollows">0</span></button>
+    <button class="fb" data-f="nofol">✗ No me siguen <span class="fct" id="nnofol">0</span></button>
+    <button class="fb" data-f="unrel">○ Sin relación <span class="fct" id="nunrel">0</span></button>
+    <input class="fsearch" id="fsearch" type="text" placeholder="🔍 buscar @handle..."/>
+  </div>
+
+  <div class="grid" id="ugrid"></div>
+  <div id="pag"></div>
+</div>
+
+<div id="empty" class="empty">
+  <div class="ei">🔍</div>
+  <h2>SIN DATOS</h2>
+  <p>Pega tu lista de <strong style="color:var(--x)">Following</strong> y <strong style="color:var(--g)">Followers</strong> arriba con <strong>@usuario</strong> para analizar.</p>
+  <div id="memwrap" style="display:none;margin-top:14px">
+    <div class="membadge">💾 <span id="memh">0</span> usuarios guardados</div><br/>
+    <button class="btn bx" id="btnloadmem" style="margin-top:10px;font-size:12px">📂 Cargar datos guardados</button>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  Creado por <a href="https://x.com/MexiSonora" target="_blank">@MexiSonora</a> &nbsp;·&nbsp; Datos guardados solo en tu navegador
+</footer>
+
+<div id="ts"></div>
+
+<script>
+(function() {
+'use strict';
+
+// ═══════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════
+var MKEY = 'xfa_v5';
+var PPG  = 48;
+var DATA = { fw:[], fr:[], list:[], acc:'' };
+var VIEW = { f:'all', q:'', p:1 };
+
+// ═══════════════════════════════════════════════
+//  MEMORIA (localStorage)
+// ═══════════════════════════════════════════════
+function getMem() {
+  try { return JSON.parse(localStorage.getItem(MKEY)) || {users:[], acc:''}; }
+  catch(e) { return {users:[], acc:''}; }
+}
+
+function saveMem() {
+  try {
+    var m   = getMem();
+    var map = {};
+    m.users.forEach(function(u){ map[u.h] = u; });
+    DATA.list.forEach(function(u){ map[u.h] = {h:u.h, iF:u.iF, tF:u.tF, s:u.s}; });
+    m.users = Object.values(map);
+    m.acc   = DATA.acc || m.acc;
+    localStorage.setItem(MKEY, JSON.stringify(m));
+  } catch(e) {}
+  syncMem();
+}
+
+function syncMem() {
+  var n = getMem().users.length;
+  var e1 = document.getElementById('memct');
+  var e2 = document.getElementById('memh');
+  var ew = document.getElementById('memwrap');
+  if (e1) e1.textContent = n;
+  if (e2) e2.textContent = n;
+  if (ew) ew.style.display = n > 0 ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════
+//  PARSER — extrae @handles del texto
+// ═══════════════════════════════════════════════
+function parseHandles(text) {
+  if (!text || !text.trim()) return [];
+  var out   = {};
+  var regex = /@([a-zA-Z0-9_]{1,50})/g;
+  var m;
+  while ((m = regex.exec(text)) !== null) {
+    var h = m[1].toLowerCase();
+    if (h.length >= 1) out[h] = true;
+  }
+  return Object.keys(out);
+}
+
+// ═══════════════════════════════════════════════
+//  ANALIZAR
+// ═══════════════════════════════════════════════
+function analizar() {
+  var fwRaw = document.getElementById('tfw').value;
+  var frRaw = document.getElementById('tfr').value;
+
+  if (!fwRaw.trim() && !frRaw.trim()) {
+    toast('Pega usuarios en al menos un campo', 'err');
+    return;
+  }
+
+  var fw = parseHandles(fwRaw);
+  var fr = parseHandles(frRaw);
+
+  if (fw.length === 0 && fr.length === 0) {
+    toast('No se detectaron @handles — incluye el @ antes de cada usuario', 'err');
+    return;
+  }
+
+  if (fw.length === 0) toast('⚠ Following vacío: nadie aparecerá como "No te sigue"', 'warn');
+  if (fr.length === 0) toast('⚠ Followers vacío: nadie aparecerá como "Te sigue"', 'warn');
+
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('empty').style.display   = 'none';
+  document.getElementById('results').style.display = 'none';
+
+  setTimeout(function() {
+    DATA.fw  = fw;
+    DATA.fr  = fr;
+    DATA.acc = document.getElementById('acc').value.replace('@','').trim();
+
+    // Sets para lookup O(1)
+    var fwSet = {};
+    fw.forEach(function(h){ fwSet[h] = true; });
+    var frSet = {};
+    fr.forEach(function(h){ frSet[h] = true; });
+
+    // Unión de todos los handles conocidos
+    var allMap = {};
+    fw.forEach(function(h){ allMap[h] = true; });
+    fr.forEach(function(h){ allMap[h] = true; });
+    var allHandles = Object.keys(allMap);
+
+    DATA.list = allHandles.map(function(h) {
+      var iF = !!fwSet[h];  // yo lo sigo
+      var tF = !!frSet[h];  // él me sigue
+
+      var s;
+      if      ( iF &&  tF) s = 'mutual';   // ambos se siguen
+      else if ( iF && !tF) s = 'nofol';    // yo sigo, él no
+      else if (!iF &&  tF) s = 'follows';  // él sigue, yo no
+      else                 s = 'unrel';    // ninguno (safety net)
+
+      return { h:h, iF:iF, tF:tF, s:s };
+    });
+
+    // Ordenar
+    var order = {mutual:0, follows:1, nofol:2, unrel:3};
+    DATA.list.sort(function(a,b){ return order[a.s] - order[b.s]; });
+
+    saveMem();
+    document.getElementById('loader').style.display = 'none';
+    renderResults();
+    toast('✓ ' + DATA.list.length + ' usuarios · FW:' + fw.length + ' FR:' + fr.length, 'ok');
+  }, 300);
+}
+
+// ═══════════════════════════════════════════════
+//  RENDERIZAR RESULTADOS
+// ═══════════════════════════════════════════════
+function renderResults() {
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('empty').style.display   = 'none';
+
+  var f  = VIEW.f;
+  var sq = VIEW.q.toLowerCase();
+
+  var list = DATA.list.slice();
+  if (f === 'mutual')  list = list.filter(function(u){ return u.s === 'mutual'; });
+  if (f === 'follows') list = list.filter(function(u){ return u.s === 'follows'; });
+  if (f === 'nofol')   list = list.filter(function(u){ return u.s === 'nofol'; });
+  if (f === 'unrel')   list = list.filter(function(u){ return u.s === 'unrel'; });
+  if (sq) list = list.filter(function(u){ return u.h.indexOf(sq) !== -1; });
+
+  // Conteos
+  var N = { all:0, mutual:0, follows:0, nofol:0, unrel:0 };
+  N.all = DATA.list.length;
+  DATA.list.forEach(function(u){
+    if (u.s === 'mutual')  N.mutual++;
+    if (u.s === 'follows') N.follows++;
+    if (u.s === 'nofol')   N.nofol++;
+    if (u.s === 'unrel')   N.unrel++;
+  });
+
+  document.getElementById('nall').textContent     = N.all;
+  document.getElementById('nmutual').textContent  = N.mutual;
+  document.getElementById('nfollows').textContent = N.follows;
+  document.getElementById('nnofol').textContent   = N.nofol;
+  document.getElementById('nunrel').textContent   = N.unrel;
+
+  // Stats
+  var statsData = [
+    {l:'Total',        v:N.all,     c:'kx', s:'usuarios únicos'},
+    {l:'Mutuos',       v:N.mutual,  c:'kx', s:'siguen ambos'},
+    {l:'Te siguen',    v:N.follows, c:'kg', s:'tú no los sigues'},
+    {l:'No te siguen', v:N.nofol,   c:'kr', s:'tú sí los sigues'},
+  ];
+  document.getElementById('stats').innerHTML = statsData.map(function(k){
+    return '<div class="kpi '+k.c+'"><div class="kl">'+k.l+'</div><div class="kv">'+k.v+'</div><div class="ks">'+k.s+'</div></div>';
+  }).join('');
+
+  // Paginación
+  var totalP = Math.ceil(list.length / PPG) || 1;
+  var pg     = Math.max(1, Math.min(VIEW.p, totalP));
+  var items  = list.slice((pg-1)*PPG, pg*PPG);
+
+  var COLORS = ['#1d9bf0','#00c47a','#f02050','#f5c000','#9060f0','#ff7030','#e040fb','#00bcd4'];
+  function hcol(h){ return COLORS[h.charCodeAt(0) % COLORS.length]; }
+
+  var LABEL = {mutual:'Mutuo', follows:'Te sigue', nofol:'No te sigue', unrel:'Sin relación'};
+  var BADGE = {mutual:'bm', follows:'bf', nofol:'bn', unrel:'bu'};
+  var CCLS  = {mutual:'cm', follows:'cf', nofol:'cn', unrel:'cu'};
+
+  var grid = document.getElementById('ugrid');
+  if (!items.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:36px;color:var(--t3);font-family:var(--mono);font-size:11px">Sin resultados con este filtro</div>';
+  } else {
+    grid.innerHTML = items.map(function(u, i) {
+      var c   = hcol(u.h);
+      var meta = (u.iF ? '✓ Sigues' : '— No sigues') + ' · ' + (u.tF ? '✓ Te sigue' : '✗ No te sigue');
+      return '<div class="ucard '+CCLS[u.s]+'" onclick="window.__goX(\''+u.h+'\')" style="animation-delay:'+(i%PPG*0.012)+'s">'
+        + '<div class="av" style="background:'+c+'12;border-color:'+c+'44;color:'+c+'">'+u.h[0].toUpperCase()+'</div>'
+        + '<div class="un"><div class="uh">@'+u.h+'</div><div class="um">'+meta+'</div></div>'
+        + '<div class="ubadge '+BADGE[u.s]+'">'+LABEL[u.s]+'</div>'
+        + '<a class="xgo" href="https://x.com/'+u.h+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver →</a>'
+        + '</div>';
+    }).join('');
+  }
+
+  // Paginación
+  var pagEl = document.getElementById('pag');
+  if (totalP <= 1) { pagEl.innerHTML=''; return; }
+  var ph='';
+  var s=Math.max(1,pg-4), e=Math.min(totalP,pg+4);
+  if(s>1) ph+='<button onclick="window.__goP(1)" style="'+pbStyle(pg===1)+'">1</button><span style="color:var(--t3);padding:4px;font-size:10px">…</span>';
+  for(var i=s;i<=e;i++) ph+='<button onclick="window.__goP('+i+')" style="'+pbStyle(i===pg)+'">'+i+'</button>';
+  if(e<totalP) ph+='<span style="color:var(--t3);padding:4px;font-size:10px">…</span><button onclick="window.__goP('+totalP+')" style="'+pbStyle(pg===totalP)+'">'+totalP+'</button>';
+  pagEl.innerHTML = ph;
+
+  syncMem();
+}
+
+function pbStyle(active){
+  return 'background:'+(active?'var(--x)':'var(--bg3)')+';color:'+(active?'#fff':'var(--t2)')+';border:1px solid '+(active?'var(--x)':'var(--line2)')+';padding:5px 10px;border-radius:6px;font-family:var(--mono);font-size:10px;cursor:pointer';
+}
+
+// Exponer funciones de paginación y navegación globalmente
+window.__goP = function(p) {
+  VIEW.p = p;
+  renderResults();
+  window.scrollTo({top: document.getElementById('results').offsetTop - 70, behavior:'smooth'});
+};
+window.__goX = function(h) {
+  window.open('https://x.com/' + h, '_blank', 'noopener,noreferrer');
+};
+
+// ═══════════════════════════════════════════════
+//  EXPORTAR
+// ═══════════════════════════════════════════════
+function exportar(fmt) {
+  if (!DATA.list || DATA.list.length === 0) {
+    toast('Primero analiza usuarios para poder exportar', 'err');
+    return;
+  }
+
+  var f  = VIEW.f;
+  var sq = VIEW.q.toLowerCase();
+  var d  = DATA.list.slice();
+
+  if (f === 'mutual')  d = d.filter(function(u){ return u.s === 'mutual'; });
+  if (f === 'follows') d = d.filter(function(u){ return u.s === 'follows'; });
+  if (f === 'nofol')   d = d.filter(function(u){ return u.s === 'nofol'; });
+  if (f === 'unrel')   d = d.filter(function(u){ return u.s === 'unrel'; });
+  if (sq) d = d.filter(function(u){ return u.h.indexOf(sq) !== -1; });
+
+  if (d.length === 0) {
+    toast('Sin usuarios con el filtro actual', 'warn');
+    return;
+  }
+
+  var acc  = DATA.acc || 'cuenta';
+  var date = new Date().toISOString().slice(0, 10);
+  var LB   = {mutual:'MUTUO', follows:'TE_SIGUE', nofol:'NO_TE_SIGUE', unrel:'SIN_RELACION'};
+
+  var content = '', mime = '', filename = '';
+
+  if (fmt === 'csv') {
+    var rows = ['Handle,Yo_Sigo,Me_Sigue,Estado,URL'];
+    d.forEach(function(u){
+      rows.push('@'+u.h+','+u.iF+','+u.tF+','+LB[u.s]+',https://x.com/'+u.h);
+    });
+    content  = rows.join('\r\n');
+    mime     = 'text/csv';
+    filename = 'xfa_' + acc + '_' + date + '.csv';
+  } else if (fmt === 'txt') {
+    var lines = d.map(function(u){ return '@'+u.h+' ['+LB[u.s]+']'; });
+    content  = lines.join('\r\n');
+    mime     = 'text/plain';
+    filename = 'xfa_' + acc + '_' + date + '.txt';
+  } else if (fmt === 'json') {
+    var users = d.map(function(u){
+      return { handle:'@'+u.h, yo_sigo:u.iF, me_sigue:u.tF, estado:LB[u.s], url:'https://x.com/'+u.h };
+    });
+    content  = JSON.stringify({ account:acc, fecha:date, total:d.length, usuarios:users }, null, 2);
+    mime     = 'application/json';
+    filename = 'xfa_' + acc + '_' + date + '.json';
+  }
+
+  try {
+    var blob = new Blob([content], { type: mime + ';charset=utf-8' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+    toast('✓ ' + fmt.toUpperCase() + ' descargado — ' + d.length + ' usuarios', 'ok');
+  } catch(e) {
+    toast('Error al descargar: ' + e.message, 'err');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CONTADOR EN VIVO
+// ═══════════════════════════════════════════════
+function liveCount(txtId, ctId) {
+  var text = document.getElementById(txtId).value;
+  var el   = document.getElementById(ctId);
+  if (!el) return;
+  if (!text.trim()) { el.textContent = ''; el.className = 'colct'; return; }
+  var p = parseHandles(text);
+  if (p.length > 0) {
+    var preview = p.slice(0,5).map(function(h){ return '@'+h; }).join(' ');
+    el.textContent = '✓ ' + p.length + ' detectados: ' + preview + (p.length>5?' …':'');
+    el.className = 'colct ctok';
+  } else {
+    el.textContent = '⚠ Ningún @handle detectado — incluye el @ antes del usuario';
+    el.className = 'colct cterr';
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function toast(msg, type) {
+  var cls = {ok:'tok', err:'terr', info:'tinfo', warn:'twarn'};
+  var el  = document.createElement('div');
+  el.className  = 'toast ' + (cls[type] || 'tinfo');
+  el.textContent = msg;
+  document.getElementById('ts').appendChild(el);
+  setTimeout(function(){
+    el.style.opacity    = '0';
+    el.style.transition = 'opacity .3s';
+    setTimeout(function(){ el.parentNode && el.parentNode.removeChild(el); }, 300);
+  }, 4000);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Analizar
+  document.getElementById('btngo').addEventListener('click', analizar);
+
+  // Limpiar
+  document.getElementById('btnclr').addEventListener('click', function() {
+    document.getElementById('tfw').value = '';
+    document.getElementById('tfr').value = '';
+    document.getElementById('ctfw').textContent = '';
+    document.getElementById('ctfr').textContent = '';
+    document.getElementById('pvbox').style.display = 'none';
+    toast('Campos limpiados', 'info');
+  });
+
+  // Script toggle
+  document.getElementById('btnscript').addEventListener('click', function() {
+    var b = document.getElementById('sbox');
+    b.style.display = (b.style.display === 'block') ? 'none' : 'block';
+  });
+  document.getElementById('btnxscript').addEventListener('click', function() {
+    document.getElementById('sbox').style.display = 'none';
+  });
+  document.getElementById('btncpscript').addEventListener('click', function() {
+    var txt = document.getElementById('devscript').textContent;
+    navigator.clipboard.writeText(txt)
+      .then(function(){ toast('Script copiado', 'ok'); })
+      .catch(function(){ toast('Selecciona el texto manualmente', 'warn'); });
+  });
+
+  // Verificar detección
+  document.getElementById('btnprev').addEventListener('click', function() {
+    var fw  = parseHandles(document.getElementById('tfw').value);
+    var fr  = parseHandles(document.getElementById('tfr').value);
+    var box = document.getElementById('pvbox');
+    function chip(h, c){ return '<span style="display:inline-block;background:'+c+'14;border:1px solid '+c+'35;color:'+c+';padding:2px 7px;border-radius:4px;margin:2px;font-family:var(--mono);font-size:10px">@'+h+'</span>'; }
+    var html = '<div style="color:var(--x);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">// Handles detectados</div>';
+    html += '<div style="margin-bottom:8px"><span style="color:var(--x);font-size:10px">📋 Following ('+fw.length+'):</span> ';
+    html += fw.length ? fw.map(function(h){ return chip(h,'#1d9bf0'); }).join('') : '<span style="color:var(--t3);font-size:10px">ninguno — ¿pusiste el @?</span>';
+    html += '</div>';
+    html += '<div><span style="color:var(--g);font-size:10px">👥 Followers ('+fr.length+'):</span> ';
+    html += fr.length ? fr.map(function(h){ return chip(h,'#00c47a'); }).join('') : '<span style="color:var(--t3);font-size:10px">ninguno — ¿pusiste el @?</span>';
+    html += '</div>';
+    box.innerHTML = html;
+    box.style.display = 'block';
+  });
+
+  // Account input → links
+  document.getElementById('acc').addEventListener('input', function() {
+    var a = this.value.replace('@','').trim();
+    document.getElementById('lfw').href = a ? 'https://x.com/'+a+'/following' : 'https://x.com';
+    document.getElementById('lfr').href = a ? 'https://x.com/'+a+'/followers' : 'https://x.com';
+  });
+
+  // EXPORT BUTTONS — eventos directos, sin onclick en HTML
+  document.getElementById('expcsv').addEventListener('click',  function(){ exportar('csv');  });
+  document.getElementById('exptxt').addEventListener('click',  function(){ exportar('txt');  });
+  document.getElementById('expjson').addEventListener('click', function(){ exportar('json'); });
+
+  // Borrar memoria
+  document.getElementById('btnclrmem').addEventListener('click', function() {
+    if (!confirm('¿Borrar historial guardado?')) return;
+    localStorage.removeItem(MKEY);
+    syncMem();
+    toast('Historial borrado', 'warn');
+  });
+
+  // Filtros
+  document.querySelectorAll('.fb').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.fb').forEach(function(b){
+        b.classList.remove('on','gon','ron','oon');
+      });
+      btn.classList.add('on');
+      var f = btn.getAttribute('data-f');
+      if (f === 'follows') btn.classList.add('gon');
+      if (f === 'nofol')   btn.classList.add('ron');
+      if (f === 'unrel')   btn.classList.add('oon');
+      VIEW.f = f;
+      VIEW.p = 1;
+      if (DATA.list.length) renderResults();
+    });
+  });
+
+  // Búsqueda
+  document.getElementById('fsearch').addEventListener('input', function() {
+    VIEW.q = this.value;
+    VIEW.p = 1;
+    if (DATA.list.length) renderResults();
+  });
+
+  // Contadores en vivo
+  document.getElementById('tfw').addEventListener('input', function(){ liveCount('tfw','ctfw'); });
+  document.getElementById('tfr').addEventListener('input', function(){ liveCount('tfr','ctfr'); });
+
+  // Cargar memoria
+  document.getElementById('btnloadmem').addEventListener('click', function() {
+    var m = getMem();
+    if (!m.users || !m.users.length) { toast('Sin datos guardados', 'warn'); return; }
+    DATA.list = m.users.map(function(u){
+      return { h:u.h, iF:!!u.iF, tF:!!u.tF, s:u.s||'unrel' };
+    });
+    DATA.acc  = m.acc || '';
+    DATA.fw   = DATA.list.filter(function(u){ return u.iF; }).map(function(u){ return u.h; });
+    DATA.fr   = DATA.list.filter(function(u){ return u.tF; }).map(function(u){ return u.h; });
+    renderResults();
+    toast('📂 ' + m.users.length + ' usuarios cargados', 'info');
+  });
+
+  // Init
+  syncMem();
+  var m = getMem();
+  if (m.users && m.users.length > 0) {
+    toast('💾 ' + m.users.length + ' usuarios en memoria guardada', 'info');
+  }
+
+}); // DOMContentLoaded
+
+})(); // IIFE
+</script>
+</body>
+</html>
